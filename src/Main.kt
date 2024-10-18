@@ -9,6 +9,12 @@ inline fun MemorySegment.gm (i:Int)
 inline fun MemorySegment.sm (i:Int, v:Double)
 	= setAtIndex(JAVA_DOUBLE, i.toLong(), v)
 
+inline fun MemorySegment.ga (i:Long)
+	= get(JAVA_DOUBLE, i)
+
+inline fun MemorySegment.sa (i:Long, v:Double)
+	= set(JAVA_DOUBLE, i, v)
+
 
 private const val M00 = 0
 private const val M10 = 1
@@ -27,34 +33,54 @@ private const val M13 = 13
 private const val M23 = 14
 private const val M33 = 15
 
+private const val MA00 = M00.toLong() * Double.SIZE_BYTES
+private const val MA10 = M10.toLong() * Double.SIZE_BYTES
+private const val MA20 = M20.toLong() * Double.SIZE_BYTES
+private const val MA30 = M30.toLong() * Double.SIZE_BYTES
+private const val MA01 = M01.toLong() * Double.SIZE_BYTES
+private const val MA11 = M11.toLong() * Double.SIZE_BYTES
+private const val MA21 = M21.toLong() * Double.SIZE_BYTES
+private const val MA31 = M31.toLong() * Double.SIZE_BYTES
+private const val MA02 = M02.toLong() * Double.SIZE_BYTES
+private const val MA12 = M12.toLong() * Double.SIZE_BYTES
+private const val MA22 = M22.toLong() * Double.SIZE_BYTES
+private const val MA32 = M32.toLong() * Double.SIZE_BYTES
+private const val MA03 = M03.toLong() * Double.SIZE_BYTES
+private const val MA13 = M13.toLong() * Double.SIZE_BYTES
+private const val MA23 = M23.toLong() * Double.SIZE_BYTES
+private const val MA33 = M33.toLong() * Double.SIZE_BYTES
+
 private fun mMul (l:Mat, r:Mat, d:Mat)
 {
-	val rm00 = r[M00];val rm10 = r[M10];val rm20 = r[M20];val rm30 = r[M30]
-	val rm01 = r[M01];val rm11 = r[M11];val rm21 = r[M21];val rm31 = r[M31]
-	val rm02 = r[M02];val rm12 = r[M12];val rm22 = r[M22];val rm32 = r[M32]
-	val rm03 = r[M03];val rm13 = r[M13];val rm23 = r[M23];val rm33 = r[M33]
+	val mr = r.address
+	val rm00 = mr.ga(MA00);val rm10 = mr.ga(MA10);val rm20 = mr.ga(MA20);val rm30 = mr.ga(MA30)
+	val rm01 = mr.ga(MA01);val rm11 = mr.ga(MA11);val rm21 = mr.ga(MA21);val rm31 = mr.ga(MA31)
+	val rm02 = mr.ga(MA02);val rm12 = mr.ga(MA12);val rm22 = mr.ga(MA22);val rm32 = mr.ga(MA32)
+	val rm03 = mr.ga(MA03);val rm13 = mr.ga(MA13);val rm23 = mr.ga(MA23);val rm33 = mr.ga(MA33)
 
-	val lm00 = l[M00];val lm10 = l[M10];val lm20 = l[M20];val lm30 = l[M30]
-	val lm01 = l[M01];val lm11 = l[M11];val lm21 = l[M21];val lm31 = l[M31]
-	val lm02 = l[M02];val lm12 = l[M12];val lm22 = l[M22];val lm32 = l[M32]
-	val lm03 = l[M03];val lm13 = l[M13];val lm23 = l[M23];val lm33 = l[M33]
+	val ml = l.address
+	val lm00 = ml.ga(MA00);val lm10 = ml.ga(MA10);val lm20 = ml.ga(MA20);val lm30 = ml.ga(MA30)
+	val lm01 = ml.ga(MA01);val lm11 = ml.ga(MA11);val lm21 = ml.ga(MA21);val lm31 = ml.ga(MA31)
+	val lm02 = ml.ga(MA02);val lm12 = ml.ga(MA12);val lm22 = ml.ga(MA22);val lm32 = ml.ga(MA32)
+	val lm03 = ml.ga(MA03);val lm13 = ml.ga(MA13);val lm23 = ml.ga(MA23);val lm33 = ml.ga(MA33)
 
-	d[M00]=lm00*rm00 + lm10*rm01 + lm20*rm02 + lm30*rm03
-	d[M10]=lm01*rm00 + lm11*rm01 + lm21*rm02 + lm31*rm03
-	d[M20]=lm02*rm00 + lm12*rm01 + lm22*rm02 + lm32*rm03
-	d[M30]=lm03*rm00 + lm13*rm01 + lm23*rm02 + lm33*rm03
-	d[M01]=lm00*rm10 + lm10*rm11 + lm20*rm12 + lm30*rm13
-	d[M11]=lm01*rm10 + lm11*rm11 + lm21*rm12 + lm31*rm13
-	d[M21]=lm02*rm10 + lm12*rm11 + lm22*rm12 + lm32*rm13
-	d[M31]=lm03*rm10 + lm13*rm11 + lm23*rm12 + lm33*rm13
-	d[M02]=lm00*rm20 + lm10*rm21 + lm20*rm22 + lm30*rm23
-	d[M12]=lm01*rm20 + lm11*rm21 + lm21*rm22 + lm31*rm23
-	d[M22]=lm02*rm20 + lm12*rm21 + lm22*rm22 + lm32*rm23
-	d[M32]=lm03*rm20 + lm13*rm21 + lm23*rm22 + lm33*rm23
-	d[M03]=lm00*rm30 + lm10*rm31 + lm20*rm32 + lm30*rm33
-	d[M13]=lm01*rm30 + lm11*rm31 + lm21*rm32 + lm31*rm33
-	d[M23]=lm02*rm30 + lm12*rm31 + lm22*rm32 + lm32*rm33
-	d[M33]=lm03*rm30 + lm13*rm31 + lm23*rm32 + lm33*rm33
+	val md = d.address
+	md.sa(MA00,lm00*rm00 + lm10*rm01 + lm20*rm02 + lm30*rm03)
+	md.sa(MA10,lm01*rm00 + lm11*rm01 + lm21*rm02 + lm31*rm03)
+	md.sa(MA20,lm02*rm00 + lm12*rm01 + lm22*rm02 + lm32*rm03)
+	md.sa(MA30,lm03*rm00 + lm13*rm01 + lm23*rm02 + lm33*rm03)
+	md.sa(MA01,lm00*rm10 + lm10*rm11 + lm20*rm12 + lm30*rm13)
+	md.sa(MA11,lm01*rm10 + lm11*rm11 + lm21*rm12 + lm31*rm13)
+	md.sa(MA21,lm02*rm10 + lm12*rm11 + lm22*rm12 + lm32*rm13)
+	md.sa(MA31,lm03*rm10 + lm13*rm11 + lm23*rm12 + lm33*rm13)
+	md.sa(MA02,lm00*rm20 + lm10*rm21 + lm20*rm22 + lm30*rm23)
+	md.sa(MA12,lm01*rm20 + lm11*rm21 + lm21*rm22 + lm31*rm23)
+	md.sa(MA22,lm02*rm20 + lm12*rm21 + lm22*rm22 + lm32*rm23)
+	md.sa(MA32,lm03*rm20 + lm13*rm21 + lm23*rm22 + lm33*rm23)
+	md.sa(MA03,lm00*rm30 + lm10*rm31 + lm20*rm32 + lm30*rm33)
+	md.sa(MA13,lm01*rm30 + lm11*rm31 + lm21*rm32 + lm31*rm33)
+	md.sa(MA23,lm02*rm30 + lm12*rm31 + lm22*rm32 + lm32*rm33)
+	md.sa(MA33,lm03*rm30 + lm13*rm31 + lm23*rm32 + lm33*rm33)
 }
 
 fun mMul (lhs:Mat, rhs:Mat): Mat
@@ -199,7 +225,8 @@ fun cmp (cMat:Mat, jMat:Matrix4d)
 
 fun main ()
 {
-	val iterates = 0..292202*2
+	val iterates = 0..(10000000)
+//	val iterates = 0..292202*2
 
 	val data_a = doubleArrayOf(
 		1.0, 0.0, 0.0, 0.0,
