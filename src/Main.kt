@@ -26,8 +26,7 @@ private const val M13 = 13
 private const val M23 = 14
 private const val M33 = 15
 
-
-private inline fun mMul (l:Mat, r:Mat, d:Mat)
+private fun mMul (l:Mat, r:Mat, d:Mat)
 {
 	d[M00]=l[M00]*r[M00]+l[M10]*r[M01]+l[M20]*r[M02]+l[M30]*r[M03]
 	d[M10]=l[M01]*r[M00]+l[M11]*r[M01]+l[M21]*r[M02]+l[M31]*r[M03]
@@ -83,6 +82,8 @@ internal constructor (val address: MemorySegment)
 		internal fun createUninit (arena:Arena)
 			= Mat(createMem(arena))
 
+		operator fun invoke () = this(Arena.ofAuto())
+
 		operator fun invoke (arena:Arena): Mat
 		{
 			return Mat(createMem(arena).apply {
@@ -128,6 +129,19 @@ internal constructor (val address: MemorySegment)
 	}
 }
 
+fun matrixIdentity () = Mat()
+fun matrixOf (
+	m00:Double, m10:Double, m20:Double, m30:Double,
+	m01:Double, m11:Double, m21:Double, m31:Double,
+	m02:Double, m12:Double, m22:Double, m32:Double,
+	m03:Double, m13:Double, m23:Double, m33:Double,
+) = Mat(
+	m00,m10,m20,m30,
+	m01,m11,m21,m31,
+	m02,m12,m22,m32,
+	m03,m13,m23,m33,
+)
+
 fun matStr (m:Mat):String
 {
 	return """
@@ -140,14 +154,9 @@ fun matStr (m:Mat):String
 
 fun main ()
 {
-	val m = Mat(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0,
-	)
+	val m = matrixIdentity()
 
-	val m2 = Mat(
+	val m2 = matrixOf(
 		2.0, 0.0, 0.0, 0.0,
 		0.0, 3.0, 0.0, 0.0,
 		0.0, 0.0, 4.0, 0.0,
